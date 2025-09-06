@@ -38,7 +38,8 @@
     }
 
     h1 {
-      margin: 0 0 12px;
+      margin: 0 0 120px;
+      
       font-size: clamp(20px, 5vw, 32px);
       letter-spacing: 0.5px;
       color: #30374a;
@@ -65,7 +66,7 @@
     }
 
     .layer {
-      height: 20px;
+      height: 40px;
       background: linear-gradient(#f6c0a9, var(--cake));
       border: 2px solid #e2a28c;
       border-radius: 8px;
@@ -98,25 +99,48 @@
     .candle {
       width: 14px; height: 48px;
       margin: 0 auto;
-      background: repeating-linear-gradient(90deg, #ffd24d 0 6px, #ffe89a 6px 12px);
+      background: repeating-linear-gradient(90deg, #ffd24d 0 6px, #ffe89a 6px 12px);  z-index: 2; 
       border-radius: 4px;
       border: 2px solid #e3b930;
-      position: absolute; left: 50%; transform: translateX(-50%); top: -52px;
+      position: absolute; left: 50%; transform: translateX(-50%); top: -36px;
       display: grid; place-items: center;
     }
 
     .wick { width: 2px; height: 10px; background: var(--wick); margin-top: -6px; }
 
     .flame {
-      position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
-      width: 18px; height: 26px;
+      position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+      width: 28px; height: 50px;
       background: radial-gradient(circle at 50% 55%, var(--flame1) 0 35%, var(--flame2) 36% 70%, transparent 71% 100%);
-      border-radius: 10px 10px 10px 10px / 16px 16px 8px 8px;
-      filter: drop-shadow(0 0 6px rgba(255, 170, 0, 0.6));
+      border-radius: 14px 14px 12px 12px / 22px 22px 12px 12px;
+      filter: drop-shadow(0 0 12px rgba(255, 170, 0, 0.8));
       animation: flicker 1s infinite ease-in-out alternate;
       transform-origin: 50% 100%;
     }
+    .flame.out {
+  opacity: 0;
+  animation: none;
+  filter: none;
+}
 
+.smoke {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: rgba(160,160,160,.8);
+  border-radius: 50%;
+  opacity: .8;
+  transform: translateX(-50%) translateY(0) scale(1);
+  animation: puff 1.2s ease-out forwards;
+}
+@keyframes puff {
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-40px) scale(2.5);
+  }
+}
     @keyframes flicker {
       0% { transform: translateX(-50%) scale(0.95) rotate(-2deg); opacity: 0.9; filter: drop-shadow(0 0 6px rgba(255, 170, 0, 0.65)); }
       100% { transform: translateX(-50%) scale(1.05) rotate(3deg); opacity: 1; filter: drop-shadow(0 0 12px rgba(255, 170, 0, 0.9)); }
@@ -132,6 +156,7 @@
     .controls input[type="number"] { width: 90px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 10px; font: inherit; }
     .controls button { padding: 8px 12px; border: 0; border-radius: 12px; background: #30374a; color: #fff; cursor: pointer; box-shadow: 0 4px 12px rgba(48,55,74,.2); }
     .controls button:active { transform: translateY(1px); }
+    .layer.top { overflow: visible; }
   </style>
 </head>
 <body>
@@ -204,6 +229,7 @@
         const flame = document.createElement('div'); flame.className='flame';
         candle.append(wick, flame);
         layer.appendChild(candle);
+        enableBlow(flame);
       }
       function renderCake(age){
         const a = clampAge(age);
@@ -231,6 +257,51 @@
       btnEl.addEventListener('click', ()=> renderCake(inputEl.value));
       window.addEventListener('load', askAndRender);
     })();
+    function blowOut(flame) {
+  if (flame.classList.contains('out')) return; // already out
+  flame.classList.add('out');
+
+  // add smoke puff
+  const smoke = document.createElement('div');
+  smoke.className = 'smoke';
+  flame.parentElement.appendChild(smoke);
+  setTimeout(() => smoke.remove(), 1500);
+}
+
+function enableBlow(flame) {
+  // click-to-blow
+  flame.addEventListener('click', () => blowOut(flame));
+
+  // microphone detection
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const src = ctx.createMediaStreamSource(stream);
+      const analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      src.connect(analyser);
+
+      const data = new Uint8Array(analyser.fftSize);
+
+      function checkVolume() {
+        analyser.getByteTimeDomainData(data);
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) {
+          const v = (data[i] - 128) / 128;
+          sum += v * v;
+        }
+        const rms = Math.sqrt(sum / data.length);
+        if (rms > 0.08) { // adjust sensitivity
+          blowOut(flame);
+        }
+        requestAnimationFrame(checkVolume);
+      }
+      checkVolume();
+    }).catch(() => {
+      // mic denied – click still works
+    });
+  }
+}
   </script>
 </body>
 </html>
