@@ -1,62 +1,236 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Simple HTML Birthday Cake</title>
+  <style>
+    :root {
+      --cake: #f3b399;
+      --cake-dark: #e79a7c;
+      --frosting: #fff6fb;
+      --plate: #e8eef6;
+      --candle: #ffd24d;
+      --wick: #333;
+      --flame1: #ffcc00;
+      --flame2: #ff7a00;
+      --bg: #fafbff;
+      --sprinkle1: #6c63ff;
+      --sprinkle2: #ff5da2;
+      --sprinkle3: #2ec4b6;
+    }
 
-  <head>
-    <title> Portfolio </title>
-      <style> .center-text{
-                    text-align: center;}
-                body {
-                      background-color:white;}
-                    
-      </style>
-      <link rel="StyleSheet" href="style.css">
-        <script src="direct.js"> </script>
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      background: radial-gradient(1000px 600px at 50% -200px, #eef3ff, var(--bg));
+      display: grid;
+      place-items: center;
+    }
 
-  <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <link rel="stylesheet" href="styles.css">
-   <title>Document</title>
-  </head>
+    .scene {
+      width: min(520px, 92vw);
+      text-align: center;
+      position: relative;
+      padding: 24px 12px 40px;
+    }
 
-  <body>
-      <div >
-        
-        <br>
-        <p style="color: rgb(43, 43, 194); "> <a href="https://www.linkedin.com/in/thuongm1/">
-          <img src="profile.png" alt="Online Profile" width="30" height="30" />
-          </a> <b class ="text"> Thuong Mai </b> </p>
-          <hr style="border: 1px solid gray;">
-         
-          <p><b> 👋</b></p>
-          <p>I </p>
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(20px, 5vw, 32px);
+      letter-spacing: 0.5px;
+      color: #30374a;
+    }
 
-</div>
+    .cake-wrap { position: relative; display: inline-block; }
 
-        
-      <h2> <b> Education </b> </h2>
-      <p> </p>San Jose State University, San Jose, CA </p>
-      <h2> <b> Experience </b> </h2> 
-      <p > I used to work for PHD Machining: Supplier Quality Processor   </p>
-      
-<h2> Some of my FUN</h2>
-  <form content="width=device-width, initial-scale=5.0" >
-      <label for= "dropdown">  </label>
-          <select name = "list" id = "target" >
-            <option selected > Hardware Project </option>
-            <option value= "proj3.html"> 8-bit TTL Computer</option>
-             <option value = "proj1.html"> C++ Heat Conduction</option>
-            <option value = "prj2.html"> Internship </option>
-            
-          </select>
-            <input type =button value="Go" onclick = "gotoNewPage()"/>
-      </form>
-      <form content="width=device-width, initial-scale=5.0" >
-      <label for= "dropdown">  </label>
-          <select name = "list" id = "target" >
-            <option selected > Software Project </option>
-            
-           
-          </select>
-            <input type =button value="Go" onclick = "gotoNewPage()"/>
-      </form>
-  </body>
+    .plate {
+      width: 360px;
+      height: 22px;
+      background: var(--plate);
+      border-radius: 999px;
+      margin: 28px auto 0;
+      box-shadow: inset 0 4px 10px rgba(0,0,0,0.08), 0 8px 20px rgba(36, 46, 73, 0.12);
+    }
+
+    .cake {
+      margin: 0 auto;
+      position: relative;
+      filter: drop-shadow(0 14px 20px rgba(0,0,0,0.12));
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+    }
+
+    .layer {
+      height: 20px;
+      background: linear-gradient(#f6c0a9, var(--cake));
+      border: 2px solid #e2a28c;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+      margin-top: -4px;
+    }
+
+    .layer.top {
+      border-bottom-left-radius: 6px;
+      border-bottom-right-radius: 6px;
+    }
+
+    .frosting {
+      position: absolute;
+      top: -6px;
+      left: 0;
+      right: 0;
+      height: 30px;
+      background: var(--frosting);
+      border-bottom: 2px solid #efd9e8;
+      border-top-left-radius: 8px;
+      border-top-right-radius: 8px;
+      box-shadow: inset 0 -4px 0 #f0e5ef;
+    }
+
+    .sprinkles { position: absolute; inset: 6px 10px auto 10px; display: grid; grid-auto-flow: column; grid-gap: 10px; }
+    .sprinkle { width: 10px; height: 4px; border-radius: 2px; transform: rotate(var(--r, 0deg)); background: var(--c, var(--sprinkle1)); }
+
+    .candle {
+      width: 14px; height: 48px;
+      margin: 0 auto;
+      background: repeating-linear-gradient(90deg, #ffd24d 0 6px, #ffe89a 6px 12px);
+      border-radius: 4px;
+      border: 2px solid #e3b930;
+      position: absolute; left: 50%; transform: translateX(-50%); top: -52px;
+      display: grid; place-items: center;
+    }
+
+    .wick { width: 2px; height: 10px; background: var(--wick); margin-top: -6px; }
+
+    .flame {
+      position: absolute; top: -18px; left: 50%; transform: translateX(-50%);
+      width: 18px; height: 26px;
+      background: radial-gradient(circle at 50% 55%, var(--flame1) 0 35%, var(--flame2) 36% 70%, transparent 71% 100%);
+      border-radius: 10px 10px 10px 10px / 16px 16px 8px 8px;
+      filter: drop-shadow(0 0 6px rgba(255, 170, 0, 0.6));
+      animation: flicker 1s infinite ease-in-out alternate;
+      transform-origin: 50% 100%;
+    }
+
+    @keyframes flicker {
+      0% { transform: translateX(-50%) scale(0.95) rotate(-2deg); opacity: 0.9; filter: drop-shadow(0 0 6px rgba(255, 170, 0, 0.65)); }
+      100% { transform: translateX(-50%) scale(1.05) rotate(3deg); opacity: 1; filter: drop-shadow(0 0 12px rgba(255, 170, 0, 0.9)); }
+    }
+
+    .confetti { position: absolute; inset: 0; pointer-events: none; }
+    .confetti span { position: absolute; width: 6px; height: 10px; border-radius: 2px; background: var(--sprinkle1); opacity: .8; transform: translateY(-40px); animation: fall 4s linear infinite; animation-delay: var(--d, 0s); }
+    .confetti span:nth-child(3n) { background: var(--sprinkle2); }
+    .confetti span:nth-child(5n) { background: var(--sprinkle3); }
+    @keyframes fall { from { transform: translateY(-40px) translateX(0) rotate(0deg); } to { transform: translateY(260px) translateX(20px) rotate(180deg); } }
+
+    .controls { margin-top: 14px; display: inline-flex; gap: 10px; align-items: center; }
+    .controls input[type="number"] { width: 90px; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 10px; font: inherit; }
+    .controls button { padding: 8px 12px; border: 0; border-radius: 12px; background: #30374a; color: #fff; cursor: pointer; box-shadow: 0 4px 12px rgba(48,55,74,.2); }
+    .controls button:active { transform: translateY(1px); }
+  </style>
+</head>
+<body>
+  <main class="scene">
+    <h1>🎂 <span id="title">Happy Birthday!</span></h1>
+    <div class="cake-wrap">
+      <div class="cake"></div>
+      <div class="confetti" aria-hidden="true">
+        <span style="left: 10%; --d: .1s"></span>
+        <span style="left: 22%; --d: .7s"></span>
+        <span style="left: 35%; --d: .3s"></span>
+        <span style="left: 48%; --d: .9s"></span>
+        <span style="left: 62%; --d: .2s"></span>
+        <span style="left: 76%; --d: .5s"></span>
+        <span style="left: 88%; --d: .8s"></span>
+      </div>
+      <div class="plate"></div>
+    </div>
+
+    <div class="controls">
+      <label for="ageInput">How old are you?</label>
+      <input id="ageInput" type="number" min="1" max="120" step="1" placeholder="e.g., 7" />
+      <button id="setAgeBtn" type="button">Build Cake</button>
+    </div>
+
+    <p style="margin-top: 18px; color:#4b5563"></p>
+  </main>
+  <script>
+    (function(){
+      const cakeEl = document.querySelector('.cake');
+      const titleEl = document.getElementById('title');
+      const inputEl = document.getElementById('ageInput');
+      const btnEl = document.getElementById('setAgeBtn');
+
+      function ordinal(n){
+        const s=["th","st","nd","rd"], v=n%100; return n + (s[(v-20)%10]||s[v]||s[0]);
+      }
+      function clampAge(n){
+        n = parseInt(n,10);
+        if (isNaN(n)) return 1;
+        return Math.max(1, Math.min(n, 30));
+      }
+      function makeSprinkle(color, rot){
+        const s = document.createElement('div');
+        s.className='sprinkle';
+        s.style.setProperty('--c', color);
+        s.style.setProperty('--r', rot + 'deg');
+        return s;
+      }
+      function buildTopExtras(layer){
+        const frosting = document.createElement('div');
+        frosting.className = 'frosting';
+        layer.appendChild(frosting);
+
+        const spr = document.createElement('div');
+        spr.className='sprinkles';
+        spr.append(
+          makeSprinkle('var(--sprinkle1)', -20),
+          makeSprinkle('var(--sprinkle2)', 30),
+          makeSprinkle('var(--sprinkle3)', -8),
+          makeSprinkle('var(--sprinkle2)', 8),
+          makeSprinkle('var(--sprinkle1)', -12),
+          makeSprinkle('var(--sprinkle3)', 18)
+        );
+        layer.appendChild(spr);
+
+        const candle = document.createElement('div');
+        candle.className='candle';
+        const wick = document.createElement('div'); wick.className='wick';
+        const flame = document.createElement('div'); flame.className='flame';
+        candle.append(wick, flame);
+        layer.appendChild(candle);
+      }
+      function renderCake(age){
+        const a = clampAge(age);
+        cakeEl.innerHTML = '';
+        const baseWidth = 300;
+        const step = 10;
+        for(let i=0;i<a;i++){
+          const layer = document.createElement('div');
+          layer.className = 'layer' + (i===a-1 ? ' top' : '');
+          const width = baseWidth - i*step; // top narrower
+          layer.style.width = width + 'px';
+          if(i===a-1){ buildTopExtras(layer); }
+          cakeEl.appendChild(layer);
+        }
+        titleEl.textContent = 'Happy ' + ordinal(a) + ' Birthday!';
+      }
+
+      function askAndRender(){
+        const ans = prompt('How old are you?');
+        if(ans===null) return;
+        inputEl.value = ans;
+        renderCake(ans);
+      }
+
+      btnEl.addEventListener('click', ()=> renderCake(inputEl.value));
+      window.addEventListener('load', askAndRender);
+    })();
+  </script>
+</body>
 </html>
